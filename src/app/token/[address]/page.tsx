@@ -50,7 +50,9 @@ export default async function TokenPage({
           <h2 className="text-2xl font-bold">Pools</h2>
           <div className="flex gap-4 overflow-x-auto scrollbar-hide bg-accent p-4 rounded-xl">
             {tokenInfo.dexscreenerInfo?.map((pool) => (
-              <PoolCard pair={pool} />
+              <div key={pool.pairAddress}>
+                <PoolCard pair={pool} />
+              </div>
             ))}
             {tokenInfo.dexscreenerInfo?.length === 0 && (
               <p className="text-sm text-muted-foreground">No pools found</p>
