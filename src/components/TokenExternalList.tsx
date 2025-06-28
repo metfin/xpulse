@@ -24,7 +24,7 @@ export default function TokenExternalList({
 
         {
           img: "/external/birdeye-logo.svg",
-          link: `https://birdeye.so/token${tokenAddress}`,
+          link: `https://birdeye.so/token/${tokenAddress}`,
         },
       ].map((item) => (
         <a
