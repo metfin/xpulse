@@ -8,7 +8,7 @@ export default function PoolList({ tokenInfo }: { tokenInfo: TokenInfo }) {
       {/* Pool List */}
       <div className="w-full border rounded-xl p-4 gap-4 space-y-4">
         <h2 className="text-2xl font-bold">Pools</h2>
-        <div className="flex gap-4 overflow-x-auto scrollbar-hide bg-accent p-4 rounded-xl">
+        <div className="flex gap-4 overflow-x-auto scrollbar-hide bg-muted p-4 rounded-xl">
           {tokenInfo.dexscreenerInfo?.map((pool) => (
             <div key={pool.pairAddress}>
               <PoolCard pair={pool} />
