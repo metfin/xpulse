@@ -2,39 +2,13 @@
 
 import React, { useEffect, useId } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useUserStore } from "@/stores/useUserStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from "@/components/ui/navigation-menu";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import Image from "next/image";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import { SearchIcon } from "lucide-react";
-import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { User, LogOut } from "lucide-react";
-
-// Navigation links array to be used in both desktop and mobile menus
-const navigationLinks = [
-  { href: "/dashboard", label: "Dashboard", active: true },
-  { href: "/portfolio", label: "Portfolio" },
-  { href: "/analytics", label: "Analytics" },
-];
+import WalletButton from "./WalletButton";
 
 export default function NavBar() {
   const { connected, publicKey, wallet, disconnect } = useWallet();
@@ -56,19 +30,6 @@ export default function NavBar() {
     disconnectWallet,
     user.isConnected,
   ]);
-
-  const handleDisconnect = async () => {
-    try {
-      await disconnect();
-      disconnectWallet();
-    } catch (error) {
-      console.error("Error disconnecting wallet:", error);
-    }
-  };
-
-  const formatPublicKey = (key: string) => {
-    return `${key.slice(0, 4)}...${key.slice(-4)}`;
-  };
 
   return (
     <header className="border-b px-4 md:px-6">
@@ -110,59 +71,27 @@ export default function NavBar() {
                 </svg>
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-36 p-1 md:hidden">
-              <NavigationMenu className="max-w-none *:w-full">
-                <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
-                  {navigationLinks.map((link, index) => (
-                    <NavigationMenuItem key={index} className="w-full">
-                      <NavigationMenuLink
-                        href={link.href}
-                        className="py-1.5"
-                        active={link.active}
-                      >
-                        {link.label}
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                  ))}
-                </NavigationMenuList>
-              </NavigationMenu>
-            </PopoverContent>
           </Popover>
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 select-none">
             <div className="flex items-center">
-              <img 
-                src="/favicon.ico" 
-                alt="Metfin" 
-                className="h-6 w-6"
-              />
-              <span className="ml-1 text-xl font-bold text-primary">metfin</span>
+              <div>
+                <Image
+                  src="/blue-nobg.svg"
+                  alt="xpulse"
+                  width={32}
+                  height={32}
+                />
+              </div>
+              <span className="ml-1 text-xl font-bold text-primary">
+                xpulse
+              </span>
             </div>
-            <div className="h-6 w-px bg-border"></div>
-            <Link href="/" className="text-primary hover:text-primary/90">
-              <h1 className="text-xl font-bold">xpulse</h1>
-            </Link>
           </div>
         </div>
-        
+
         {/* Middle area */}
         <div className="grow flex items-center justify-center gap-6">
-          {/* Navigation menu */}
-          <NavigationMenu>
-            <NavigationMenuList className="gap-2">
-              {navigationLinks.map((link, index) => (
-                <NavigationMenuItem key={index}>
-                  <NavigationMenuLink
-                    active={link.active}
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary py-1.5 font-medium"
-                  >
-                    {link.label}
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu>
           {/* Search form */}
           <div className="relative w-full max-w-xs">
             <Input
@@ -181,40 +110,10 @@ export default function NavBar() {
             </div>
           </div>
         </div>
-        
+
         {/* Right side - Wallet Connection */}
         <div className="flex flex-1 items-center justify-end gap-2">
-          {user.isConnected && user.publicKey ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full border border-border hover:bg-muted">
-                  <User className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">user1</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {formatPublicKey(user.publicKey)}
-                    </p>
-                    {user.walletName && (
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user.walletName}
-                      </p>
-                    )}
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleDisconnect}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Disconnect</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <WalletMultiButton className="!bg-primary !text-primary-foreground hover:!bg-primary/90" />
-          )}
+          <WalletButton />
         </div>
       </div>
     </header>
