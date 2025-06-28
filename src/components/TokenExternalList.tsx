@@ -13,8 +13,26 @@ export default function TokenExternalList({
           img: "/external/jup-logo.svg",
           link: `https://jup.ag/tokens/${tokenAddress}`,
         },
+        {
+          img: "/external/gmgn-logo.svg",
+          link: `https://gmgn.ai/sol/token/${tokenAddress}`,
+        },
+        {
+          img: "/external/dex-screener.svg",
+          link: `https://dexscreener.com/solana/${tokenAddress}`,
+        },
+
+        {
+          img: "/external/birdeye-logo.svg",
+          link: `https://birdeye.so/token${tokenAddress}`,
+        },
       ].map((item) => (
-        <a href={item.link} target="_blank" rel="noopener noreferrer">
+        <a
+          href={item.link}
+          key={item.img}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <Image
             src={item.img}
             alt={item.img}
@@ -24,71 +42,6 @@ export default function TokenExternalList({
           />
         </a>
       ))}
-      {[
-        {
-          img: "/external/gmgn-logo.svg",
-          link: `https://gmgn.ai/sol/token/${tokenAddress}`,
-        },
-      ].map((item) => (
-        <a href={item.link} target="_blank" rel="noopener noreferrer" className="mt-1">
-          <Image
-            src={item.img}
-            alt={item.img}
-            width={50}
-            height={20}
-            className="rounded-full"
-          />
-        </a>
-      ))}
-       {[
-        {
-          img: "/external/dex-screener.svg",
-          link: `https://dexscreener.com/solana/${tokenAddress}`,
-        },
-      ].map((item) => (
-        <a href={item.link} target="_blank" rel="noopener noreferrer">
-          <Image
-            src={item.img}
-            alt={item.img}
-            width={18}
-            height={18}
-            className="rounded-full"
-          />
-        </a>
-      ))}
-      {[
-        {
-          img: "/external/birdeye-logo.svg",
-          link: `https://birdeye.so/token${tokenAddress}`,
-        },
-      ].map((item) => (
-        <a href={item.link} target="_blank" rel="noopener noreferrer "className="mt-1">
-          <Image
-            src={item.img}
-            alt={item.img}
-            width={50}
-            height={20}
-            className="rounded-full"
-          />
-        </a>
-      ))}
-       {[
-        {
-          img: "/external/bubblemaps-logo.svg",
-          link: `https://app.bubblemaps.io/sol/token/${tokenAddress}`,
-        },
-      ].map((item) => (
-        <a href={item.link} target="_blank" rel="noopener noreferrer">
-          <Image
-            src={item.img}
-            alt={item.img}
-            width={25}
-            height={20}
-            className="rounded-full"
-          />
-        </a>
-      ))}
-      
     </div>
   );
 }
