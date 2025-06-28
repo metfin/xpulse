@@ -3,6 +3,7 @@ import { Figtree } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SolanaProvider } from "@/components/providers/SolanaProvider";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 const figtree = Figtree({
   variable: "--font-figtree",
@@ -28,7 +29,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SolanaProvider>{children}</SolanaProvider>
+          <QueryProvider>
+            <SolanaProvider>{children}</SolanaProvider>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>
