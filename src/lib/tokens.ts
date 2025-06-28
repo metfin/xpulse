@@ -16,7 +16,7 @@ export async function getTokenInfo(address: string): Promise<TokenInfo> {
   };
 }
 
-type TokenInfo = {
+export type TokenInfo = {
   jupInfo: TokenResponse;
   dexscreenerInfo: Pair[] | undefined;
 };
