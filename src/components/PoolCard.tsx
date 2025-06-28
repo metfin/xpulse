@@ -29,7 +29,7 @@ export default function PoolCard({ pair, onViewDetails }: PoolCardProps) {
   const isPricePositive = priceChange24h && priceChange24h >= 0;
 
   return (
-    <Card className="group relative min-w-[400px] h-full overflow-hidden transition-all duration-300 hover:shadow-lg border border-border/50 hover:border-border bg-card">
+    <Card className="group relative min-w-[400px] h-full overflow-hidden transition-all duration-300 hover:shadow-lg border border-border/50 hover:border-border bg-muted/20 hover:bg-muted/40">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
