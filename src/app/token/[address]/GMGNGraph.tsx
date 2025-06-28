@@ -11,11 +11,10 @@ export default function GMGNGraph({ address }: { address: string }) {
   const gmgnUrl = `https://www.gmgn.cc/kline/sol/${address}?theme=${gmgnTheme}`;
 
   return (
-    <div className="flex justify-between w-full border rounded-xl p-4 gap-4">
+    <div className="flex justify-between w-full border rounded-xl gap-4">
       <iframe
         src={gmgnUrl}
-        className="w-full h-96 rounded-lg"
-        frameBorder="0"
+        className="w-full h-130 rounded-xl"
         allowFullScreen
         title={`GMGN Chart for ${address}`}
       />
