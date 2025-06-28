@@ -11,7 +11,7 @@ import { SearchIcon } from "lucide-react";
 import WalletButton from "./WalletButton";
 
 export default function NavBar() {
-  const { connected, publicKey, wallet, disconnect } = useWallet();
+  const { connected, publicKey, wallet } = useWallet();
   const { user, connectWallet, disconnectWallet } = useUserStore();
   const id = useId();
 

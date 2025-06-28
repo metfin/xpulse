@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useUserStore } from "@/stores/useUserStore";
 import NavBar from "./NavBar";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import StatusBar from "./StatusBar";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -77,6 +78,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
+      <StatusBar />
     </div>
   );
 }
