@@ -172,37 +172,26 @@ export default function TokenMetrics({ tokenAddress }: TokenMetricsProps) {
             <BarChart3 className="w-5 h-5" />
             Market Metrics
           </div>
-          <Badge variant="outline" className="text-xs">
-            Live
-          </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Price Section */}
-        <MetricCard
-          label="Current Price"
-          value={formatPrice(currentPrice)}
-          change={`${priceChange24h > 0 ? "+" : ""}${priceChange24h.toFixed(
-            2
-          )}%`}
-          icon={DollarSign}
-          trend={
-            priceChange24h > 0 ? "up" : priceChange24h < 0 ? "down" : "neutral"
-          }
-        />
-
-        {/* Volume & Market Cap */}
-        <div className="grid grid-cols-2 gap-4">
-          <MetricCard
-            label="Volume 24h"
-            value={formatNumber(aggregatedData.totalVolume24h)}
-            icon={Activity}
-          />
-          <MetricCard
-            label="Market Cap"
-            value={formatNumber(aggregatedData.totalMarketCap)}
-            icon={TrendingUp}
-          />
+        <div className="flex items-center mb-4">
+          <span className="text-4xl font-bold">
+            {formatPrice(currentPrice)}
+          </span>
+          {priceChange24h !== 0 && (
+            <span
+              className={`ml-4 text-lg font-semibold ${
+                priceChange24h > 0
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-600 dark:text-red-400"
+              }`}
+            >
+              {priceChange24h > 0 ? "+" : ""}
+              {priceChange24h.toFixed(2)}%
+            </span>
+          )}
         </div>
 
         {/* Trading Activity */}
@@ -213,66 +202,63 @@ export default function TokenMetrics({ tokenAddress }: TokenMetricsProps) {
           </div>
 
           <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-sm">Buys</span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">
+            <div className="flex justify-between items-center gap-2 w-full mb-1 text-lg">
+              <span className="text-base">Buys/Sells</span>
+              <div>
+                <span className="font-medium">
                   {aggregatedData.totalBuys24h}
                 </span>
-                <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-green-500 dark:bg-green-400"
-                    style={{
-                      width: `${
-                        (aggregatedData.totalBuys24h /
-                          (aggregatedData.totalBuys24h +
-                            aggregatedData.totalSells24h)) *
-                        100
-                      }%`,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-sm">Sells</span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">
+                <span className="text-sm text-muted-foreground">/</span>
+                <span className="font-medium">
                   {aggregatedData.totalSells24h}
                 </span>
-                <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-red-500 dark:bg-red-400"
-                    style={{
-                      width: `${
-                        (aggregatedData.totalSells24h /
-                          (aggregatedData.totalBuys24h +
-                            aggregatedData.totalSells24h)) *
-                        100
-                      }%`,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-2 border-t">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">Buy/Sell Ratio</span>
                 <Badge
                   variant={buyVsSellRatio > 1 ? "default" : "secondary"}
-                  className="text-xs"
+                  className="text-base ml-2"
                 >
-                  {buyVsSellRatio.toFixed(2)}x
+                  {buyVsSellRatio.toFixed(2)}
                 </Badge>
               </div>
+            </div>
+            <div className="w-full h-2 bg-muted rounded-full overflow-hidden flex mt-2">
+              <div
+                className="h-full bg-red-500 dark:bg-red-400"
+                style={{
+                  width: `${
+                    (aggregatedData.totalSells24h /
+                      (aggregatedData.totalBuys24h +
+                        aggregatedData.totalSells24h)) *
+                    100
+                  }%`,
+                }}
+              />
+              <div
+                className="h-full bg-green-500 dark:bg-green-400"
+                style={{
+                  width: `${
+                    (aggregatedData.totalBuys24h /
+                      (aggregatedData.totalBuys24h +
+                        aggregatedData.totalSells24h)) *
+                    100
+                  }%`,
+                }}
+              />
             </div>
           </div>
         </div>
 
         {/* Additional Metrics */}
-        <div className="grid grid-cols-2 gap-4 pt-2 border-t">
+        <div className="grid grid-cols-2 gap-4 pt-2">
+          <MetricCard
+            label="Volume 24h"
+            value={formatNumber(aggregatedData.totalVolume24h)}
+            icon={Activity}
+          />
+          <MetricCard
+            label="Market Cap"
+            value={formatNumber(aggregatedData.totalMarketCap)}
+            icon={TrendingUp}
+          />
           <MetricCard
             label="Liquidity"
             value={formatNumber(aggregatedData.totalLiquidity)}
@@ -286,7 +272,7 @@ export default function TokenMetrics({ tokenAddress }: TokenMetricsProps) {
         </div>
 
         {/* Trading Pairs Count */}
-        <div className="pt-2 border-t">
+        <div className="pt-2">
           <div className="flex justify-between items-center text-sm">
             <span className="text-muted-foreground">Active Pairs</span>
             <span className="font-medium">{pairs.length}</span>

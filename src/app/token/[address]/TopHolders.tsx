@@ -7,15 +7,16 @@ import { RugCheckService } from "@/lib/rugcheck";
 import { useQuery } from "@tanstack/react-query";
 import {
   Users,
-  PieChart,
-  AlertTriangle,
   Lock,
   Wallet,
   Crown,
   TrendingUp,
   Copy,
   ExternalLink,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
+import { useState } from "react";
 
 interface TopHoldersProps {
   tokenAddress: string;
@@ -27,6 +28,8 @@ export default function TopHolders({ tokenAddress }: TopHoldersProps) {
     queryFn: () => RugCheckService.getTokenReport(tokenAddress),
     refetchInterval: 120000, // 2 minutes
   });
+
+  const [expanded, setExpanded] = useState(false);
 
   if (rugCheckLoading) {
     return (
@@ -73,23 +76,22 @@ export default function TopHolders({ tokenAddress }: TopHoldersProps) {
   }
 
   const totalHolders = rugCheckData.totalHolders || 0;
-  const topHolders = rugCheckData.topHolders.slice(0, 10);
+  const topHolders = rugCheckData.topHolders.slice(0, expanded ? 10 : 5);
   const knownAccounts = rugCheckData.knownAccounts || {};
   const lockers = rugCheckData.lockers || {};
   const lockerOwners = rugCheckData.lockerOwners || {};
 
   // Calculate concentration metrics
-  const top10Concentration = topHolders.reduce(
+  const top30Concentration = topHolders.reduce(
     (sum, holder) => sum + holder.pct,
     0
   );
+  const top10Concentration = topHolders
+    .slice(0, 10)
+    .reduce((sum, holder) => sum + holder.pct, 0);
   const top5Concentration = topHolders
     .slice(0, 5)
     .reduce((sum, holder) => sum + holder.pct, 0);
-  const top1Concentration = topHolders[0]?.pct || 0;
-
-  const isHighlyConcentrated = top10Concentration > 50;
-  const isExtremelyConcentrated = top5Concentration > 70;
 
   const formatAddress = (address: string) => {
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
@@ -139,7 +141,7 @@ export default function TopHolders({ tokenAddress }: TopHoldersProps) {
         return <TrendingUp className="w-3 h-3" />;
       case "pool":
       case "liquidity":
-        return <PieChart className="w-3 h-3" />;
+        return <TrendingUp className="w-3 h-3" />;
       default:
         return <Wallet className="w-3 h-3" />;
     }
@@ -183,18 +185,7 @@ export default function TopHolders({ tokenAddress }: TopHoldersProps) {
       <CardContent className="space-y-6">
         {/* Concentration Analysis */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <PieChart className="w-4 h-4" />
-            Concentration Analysis
-          </div>
-
           <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="space-y-1">
-              <div className="text-lg font-semibold">
-                {top1Concentration.toFixed(1)}%
-              </div>
-              <div className="text-xs text-muted-foreground">Top 1</div>
-            </div>
             <div className="space-y-1">
               <div className="text-lg font-semibold">
                 {top5Concentration.toFixed(1)}%
@@ -207,18 +198,13 @@ export default function TopHolders({ tokenAddress }: TopHoldersProps) {
               </div>
               <div className="text-xs text-muted-foreground">Top 10</div>
             </div>
-          </div>
-
-          {(isHighlyConcentrated || isExtremelyConcentrated) && (
-            <div className="flex items-center gap-2 p-2 rounded-lg border bg-muted/30">
-              <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
-              <span className="text-sm">
-                {isExtremelyConcentrated
-                  ? "Extremely concentrated ownership"
-                  : "Highly concentrated ownership"}
-              </span>
+            <div className="space-y-1">
+              <div className="text-lg font-semibold">
+                {top30Concentration.toFixed(1)}%
+              </div>
+              <div className="text-xs text-muted-foreground">Top 30</div>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Top Holders List */}
@@ -304,6 +290,32 @@ export default function TopHolders({ tokenAddress }: TopHoldersProps) {
                 </div>
               );
             })}
+            
+            {/* Dropdown button after the 5th holder */}
+            {!expanded && rugCheckData.topHolders.length > 5 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setExpanded(true)}
+                className="w-full h-8 text-muted-foreground hover:text-foreground"
+              >
+                <ChevronDown className="w-4 h-4 mr-2" />
+                Show more holders
+              </Button>
+            )}
+            
+            {/* Collapse button when expanded */}
+            {expanded && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setExpanded(false)}
+                className="w-full h-8 text-muted-foreground hover:text-foreground"
+              >
+                <ChevronUp className="w-4 h-4 mr-2" />
+                Show less
+              </Button>
+            )}
           </div>
         </div>
 
