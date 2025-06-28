@@ -41,8 +41,21 @@ export default async function TokenPage({
               </div>
             </div>
           </div>
-          {/* //TODO: Add token stats here */}
+          {/*//TODO: Add token stats here */}
           <div className="flex items-center gap-4"></div>
+        </div>
+
+        {/* Pool List */}
+        <div className="w-full border rounded-xl p-4 gap-4 space-y-4">
+          <h2 className="text-2xl font-bold">Pools</h2>
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide bg-accent p-4 rounded-xl">
+            {tokenInfo.dexscreenerInfo?.map((pool) => (
+              <PoolCard pair={pool} />
+            ))}
+            {tokenInfo.dexscreenerInfo?.length === 0 && (
+              <p className="text-sm text-muted-foreground">No pools found</p>
+            )}
+          </div>
         </div>
       </div>
     </ProtectedRoute>

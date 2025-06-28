@@ -4,9 +4,7 @@ export class DexScreenerService {
   private static readonly DEXSCREENER_API_BASE =
     "https://api.dexscreener.com/latest/dex";
 
-  static async getTokensPairs(
-    tokenMints: string[]
-  ): Promise<{ tokenAPairs: Pair[]; tokenBPairs: Pair[] } | null> {
+  static async getTokensPairs(tokenMints: string[]): Promise<Pair[] | null> {
     const response = await fetchClient<TokensResponse>(
       `${DexScreenerService.DEXSCREENER_API_BASE}/tokens/${tokenMints.join(
         ","
@@ -16,29 +14,7 @@ export class DexScreenerService {
     if (response.pairs.length === 0) {
       return null;
     }
-    const tokenAPairs = [];
-    const tokenBPairs = [];
-    for (const pair of response.pairs) {
-      // check if base token is in tokenMints
-      if (tokenMints.includes(pair.baseToken.address)) {
-        tokenAPairs.push(pair);
-      }
 
-      if (tokenMints.includes(pair.quoteToken.address)) {
-        tokenBPairs.push(pair);
-      }
-    }
-
-    return {
-      tokenAPairs,
-      tokenBPairs,
-    };
-  }
-
-  static async getPair(pairAddress: string) {
-    const response = await fetchClient<TokensResponse>(
-      `${DexScreenerService.DEXSCREENER_API_BASE}/pairs/solana/${pairAddress}`
-    );
     return response.pairs;
   }
 }
@@ -58,6 +34,7 @@ export interface Pair {
   priceNative: string;
   priceUsd: string;
   txns: Txns;
+  labels: string[];
   volume: Volume;
   priceChange: PriceChange;
   liquidity: Liquidity;
