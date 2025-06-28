@@ -22,7 +22,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${figtree.variable} antialiased`}>
+      <body className={`${figtree.variable} antialiased`} style={{ position: 'relative', minHeight: '100vh' }}>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: -1,
+            backgroundImage: "url('/background2.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.6,
+            pointerEvents: 'none',
+          }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

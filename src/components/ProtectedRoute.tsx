@@ -31,7 +31,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   // If user is not authenticated, show login page
   if (!isAuthenticated()) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen">
         <NavBar />
         <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-4">
           <div className="max-w-md w-full space-y-8 text-center">
@@ -73,7 +73,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   // If user is authenticated, show the protected content with navbar
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <NavBar />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
