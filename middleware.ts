@@ -126,11 +126,11 @@ export async function middleware(request: NextRequest) {
     }
 
     if (isDAMMPool) {
-      return NextResponse.redirect(`${baseUrl}/pool/${publicKey}`);
+      return NextResponse.redirect(`${baseUrl}/pool/dammv2/${publicKey}`);
     }
 
     if (isDLMMPool) {
-      return NextResponse.redirect(`${baseUrl}/pool/${publicKey}`);
+      return NextResponse.redirect(`${baseUrl}/pool/dlmm/${publicKey}`);
     }
 
     if (isDLMMPosition) {
