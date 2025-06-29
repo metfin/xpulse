@@ -44,7 +44,7 @@ export default function PoolList({ tokenInfo }: { tokenInfo: TokenInfo }) {
   return (
     <Card className="w-full relative">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">Pools</CardTitle>
+        <CardTitle className="text-2xl font-bold">DAMMv2 Pools</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="relative">

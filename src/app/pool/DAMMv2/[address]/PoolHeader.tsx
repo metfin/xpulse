@@ -1,7 +1,13 @@
+"use client";
+
 import { DAMMPoolInfo } from "@/lib/meteora-api";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PublicKeySpan from "@/components/PublicKeySpan";
 import React from "react";
+import { JupService} from "@/lib/jup";
+import { useQuery } from "@tanstack/react-query";
+import { BarChart3 } from "lucide-react";
+
 
 export default function PoolHeader({ poolInfo }: { poolInfo: DAMMPoolInfo }) {
   const formatNumber = (num: number) => {
@@ -10,7 +16,39 @@ export default function PoolHeader({ poolInfo }: { poolInfo: DAMMPoolInfo }) {
     if (num >= 1e3) return `$${(num / 1e3).toFixed(2)}K`;
     return `$${num.toFixed(2)}`;
   };
+  const {data: Tokens, isLoading } = useQuery({
+    queryKey: ['Tokens', poolInfo.token_a_mint , poolInfo.token_b_mint],
+    queryFn: async () => {
+      const [a, b] = await Promise.all([
+        JupService.getTokenInfo(poolInfo.token_a_mint),
+        JupService.getTokenInfo(poolInfo.token_b_mint)
+      ]);
+      return { a, b };
+    }
+})
 
+if(isLoading){
+  return(
+    <Card className="w-full h-full">
+    <CardHeader className="pb-3">
+      <CardTitle className="flex items-center gap-2 text-lg">
+        <BarChart3 className="w-5 h-5" />
+        Market Metrics
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="space-y-4">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="animate-pulse">
+            <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+            <div className="h-8 bg-muted rounded"></div>
+          </div>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+  )
+}
   const formatPercentage = (num: number) => {
     return `${(num * 100).toFixed(2)}%`;
   };
@@ -23,16 +61,28 @@ export default function PoolHeader({ poolInfo }: { poolInfo: DAMMPoolInfo }) {
           <div className="flex items-center gap-4">
             {/* Token Icons */}
             <div className="flex items-center gap-2">
-              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-600">
-                  {poolInfo.token_a_symbol}
-                </span>
+              <div className="w-12 h-12 rounded-full flex items-center justify-center">
+                {Tokens?.a?.logoURI ? (
+                  <img
+                    src={Tokens.a.logoURI}
+                    alt="Token A Logo"
+                    className="w-10 h-10 rounded-full object-contain"
+                  />
+                ) : (
+                  <span className="text-sm font-medium text-gray-600">?</span>
+                )}
               </div>
               
-              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-600">
-                  {poolInfo.token_b_symbol}
-                </span>
+              <div className="w-12 h-12 rounded-full flex items-center justify-center">
+                {Tokens?.b?.logoURI ? (
+                  <img
+                    src={Tokens.b.logoURI}
+                    alt="Token B Logo"
+                    className="w-10 h-10 rounded-full object-contain"
+                  />
+                ) : (
+                  <span className="text-sm font-medium text-gray-600">?</span>
+                )}
               </div>
             </div>
             
