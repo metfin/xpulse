@@ -151,7 +151,7 @@ export class DLMMService {
   }
   async getAllPoolsByToken(tokenaddress: string){
     const response = await fetchClient<AllPoolsByTokenResponse>(
-      `${DLMMService.DLMM_API_BASE}pair/all_by_groups?include_token_mints=${tokenaddress}`
+      `${DLMMService.DLMM_API_BASE}/pair/all_by_groups?include_token_mints=${tokenaddress}`
     );
     return response;
   }
