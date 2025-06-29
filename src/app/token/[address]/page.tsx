@@ -1,7 +1,7 @@
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { getTokenInfo } from "@/lib/tokens";
 import TokenHeader from "./TokenHeader";
-import PoolList from "./PoolList";
+import PoolList from "./DAMMv2PoolList";
 import GMGNGraph from "./GMGNGraph";
 import RugCheckInfo from "./RugCheckInfo";
 import TokenMetrics from "./TokenMetrics";

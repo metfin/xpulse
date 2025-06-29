@@ -62,7 +62,7 @@ export class DAMMService {
   
 }
 
-export interface GetAllPoolsByTokenResponse {
+export interface AllPoolsByTokenResponse {
   groups: PoolGroup[];
 }
 
@@ -150,6 +150,9 @@ export class DLMMService {
     return response;
   }
   async getAllPoolsByToken(tokenaddress: string){
-    const response = await fetchClient
+    const response = await fetchClient<AllPoolsByTokenResponse>(
+      `${DLMMService.DLMM_API_BASE}pair/all_by_groups?include_token_mints=${tokenaddress}`
+    );
+    return response;
   }
 }
