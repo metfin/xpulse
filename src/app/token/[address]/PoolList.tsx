@@ -1,16 +1,17 @@
 "use client"
-import PoolCard from "@/components/DAMMv2PoolCard";
+import DAMMv2PoolCard from "@/components/DAMMv2PoolCard";
 import { TokenInfo } from "@/lib/tokens";
 import React, { useRef, useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import dynamic from "next/dynamic";
-import { DLMMService, PoolPair } from "@/lib/meteora-api";
+import { DLMMService } from "@/lib/meteora-api";
+import { DAMMService } from "@/lib/meteora-api";
+import DLMMPoolCard from "@/components/DLMMPoolCard";
+import { useQuery } from "@tanstack/react-query";
 
-const DLMMCard = dynamic(() => import("@/components/DLMMCard"), { ssr: false });
-
-export default function DAMMv2PoolList({ tokenInfo }: { tokenInfo: TokenInfo }) {
+export default function PoolList({ tokenInfo }: { tokenInfo: TokenInfo }) {
   // DAMMv2 scroll state
   const dammScrollRef = useRef<HTMLDivElement>(null);
   const [dammCanScrollLeft, setDammCanScrollLeft] = useState(false);
@@ -21,10 +22,39 @@ export default function DAMMv2PoolList({ tokenInfo }: { tokenInfo: TokenInfo }) 
   const [dlmmCanScrollLeft, setDlmmCanScrollLeft] = useState(false);
   const [dlmmCanScrollRight, setDlmmCanScrollRight] = useState(false);
 
-  // DLMM pool state
-  const [dlmmPools, setDlmmPools] = useState<PoolPair[]>([]);
-  const [dlmmLoading, setDlmmLoading] = useState(false);
-  const [dlmmError, setDlmmError] = useState<string | null>(null);
+  // DLMM useQuery
+  const {
+    data: dlmmResp,
+    isLoading: dlmmLoading,
+    error: dlmmErrorObj,
+  } = useQuery({
+    queryKey: ["dlmm-pools", tokenInfo.jupInfo.address],
+    queryFn: async () => {
+      const service = new DLMMService();
+      return await service.getAllPoolsByToken(tokenInfo.jupInfo.address);
+    },
+    refetchInterval: 30000,
+    staleTime: 30000,
+  });
+  const dlmmPools = dlmmResp?.groups?.flatMap((g) => g.pairs) || [];
+  const dlmmError = dlmmErrorObj ? (dlmmErrorObj as Error).message : null;
+
+  // DAMMv2 useQuery
+  const {
+    data: dammResp,
+    isLoading: dammLoading,
+    error: dammErrorObj,
+  } = useQuery({
+    queryKey: ["damm-pools", tokenInfo.jupInfo.address],
+    queryFn: async () => {
+      const service = new DAMMService();
+      return await service.getDAMMpoolByToken(tokenInfo.jupInfo.address);
+    },
+    refetchInterval: 30000,
+    staleTime: 30000,
+  });
+  const dammPools = dammResp?.data || [];
+  const dammError = dammErrorObj ? (dammErrorObj as Error).message : null;
 
   // DAMMv2 scroll check
   const checkDammScroll = () => {
@@ -65,25 +95,6 @@ export default function DAMMv2PoolList({ tokenInfo }: { tokenInfo: TokenInfo }) 
       window.removeEventListener("resize", checkDlmmScroll);
     };
   }, []);
-
-  useEffect(() => {
-    async function fetchDLMM() {
-      setDlmmLoading(true);
-      setDlmmError(null);
-      try {
-        const service = new DLMMService();
-        const resp = await service.getAllPoolsByToken(tokenInfo.jupInfo.address);
-        // Flatten all groups into a single array of pairs
-        const allPairs = resp?.groups?.flatMap((g) => g.pairs) || [];
-        setDlmmPools(allPairs);
-      } catch (e: any) {
-        setDlmmError(e.message || "Failed to load DLMM pools");
-      } finally {
-        setDlmmLoading(false);
-      }
-    }
-    fetchDLMM();
-  }, [tokenInfo.jupInfo.address]);
 
   const handleDammScrollRight = () => {
     if (dammScrollRef.current) {
@@ -129,12 +140,19 @@ export default function DAMMv2PoolList({ tokenInfo }: { tokenInfo: TokenInfo }) 
               ref={dammScrollRef}
               className="flex gap-4 overflow-x-auto scrollbar-hide p-4 rounded-xl [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-muted-foreground/30 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-muted-foreground/50 [&::-webkit-scrollbar-thumb:active]:bg-muted-foreground/50"
             >
-              {tokenInfo.dexscreenerInfo?.map((pool) => (
-                <div key={pool.pairAddress}>
-                  <PoolCard pair={pool} />
-                </div>
-              ))}
-              {tokenInfo.dexscreenerInfo?.length === 0 && (
+              {dammLoading ? (
+                <p className="text-sm text-muted-foreground">Loading DAMM pools...</p>
+              ) : dammError ? (
+                <p className="text-sm text-destructive">{dammError}</p>
+              ) : dammPools.length > 0 ? (
+                dammPools.flatMap((group) =>
+                  group.pools.map((pool) => (
+                    <div key={pool.pool_address}>
+                      <DAMMv2PoolCard pair={pool} DAMMPoolInfo={group} />
+                    </div>
+                  ))
+                )
+              ) : (
                 <p className="text-sm text-muted-foreground">No pools found</p>
               )}
             </div>
@@ -180,7 +198,7 @@ export default function DAMMv2PoolList({ tokenInfo }: { tokenInfo: TokenInfo }) 
               ) : dlmmPools.length > 0 ? (
                 dlmmPools.map((pair) => (
                   <div key={pair.address}>
-                    <DLMMCard
+                    <DLMMPoolCard
                       pair={pair}
                       baseToken={{ symbol: pair.name.split("/")[0] }}
                       quoteToken={{ symbol: pair.name.split("/")[1] }}

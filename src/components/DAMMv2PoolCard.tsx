@@ -1,12 +1,16 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Pair } from "@/lib/dexscreener";
+import { DAMMPoolInfoLite } from "@/lib/types";
+import { DAMMV2PoolExternalList } from "@/components/PoolExternalList";
+import Link from "next/link";
 
 interface PoolCardProps {
-  pair: Pair;
+  pair: DAMMPoolInfoLite;
   onViewDetails?: () => void;
+  DAMMPoolInfo?: any;
 }
+
 
 function formatNumber(num: number | string, decimals: number = 2): string {
   const value = typeof num === "string" ? parseFloat(num) : num;
@@ -18,15 +22,8 @@ function formatNumber(num: number | string, decimals: number = 2): string {
   return value.toFixed(decimals);
 }
 
-function formatPercentage(num: number | null | undefined): string {
-  if (num === null || num === undefined || isNaN(num)) return "N/A";
-  const sign = num >= 0 ? "+" : "";
-  return `${sign}${num.toFixed(2)}%`;
-}
-
-export default function PoolCard({ pair, onViewDetails }: PoolCardProps) {
-  const priceChange24h = pair.priceChange?.h24;
-  const isPricePositive = priceChange24h && priceChange24h >= 0;
+export default function DAMMv2PoolCard({ pair, onViewDetails, DAMMPoolInfo }: PoolCardProps) {
+  const price = parseFloat(pair.min_price);
 
   return (
     <Card className="group relative min-w-[400px] h-full overflow-hidden transition-all duration-300 hover:shadow-lg border border-border/50 hover:border-border bg-muted/20 hover:bg-muted/40">
@@ -35,44 +32,35 @@ export default function PoolCard({ pair, onViewDetails }: PoolCardProps) {
           <div className="flex items-center gap-3">
             <div className="flex items-center -space-x-2">
               <Avatar className="size-8 border-2 border-background">
-                <AvatarImage
-                  src={pair.info?.imageUrl}
-                  alt={pair.baseToken.symbol}
-                />
                 <AvatarFallback className="text-xs font-medium">
-                  {pair.baseToken.symbol.slice(0, 2)}
+                  {pair.token_a_symbol}
                 </AvatarFallback>
               </Avatar>
               <Avatar className="size-8 border-2 border-background">
                 <AvatarFallback className="text-xs font-medium bg-muted">
-                  {pair.quoteToken.symbol.slice(0, 2)}
+                  {pair.token_b_symbol}
                 </AvatarFallback>
               </Avatar>
             </div>
             <div>
               <h3 className="font-semibold text-lg text-foreground leading-none">
-                {pair.baseToken.symbol} / {pair.quoteToken.symbol}
+                <Link
+                  href={`/pool/damm/${pair.pool_address}`}
+                  target="_"
+                  className="hover:underline underline-offset-4 transition-colors"
+                >
+                  {pair.token_a_symbol} / {pair.token_b_symbol}
+                </Link>
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                {pair.labels[0] === "DYN2" && "DAMMv2"}
+                DAMMv2
               </p>
             </div>
           </div>
           <div className="text-right">
             <div className="text-sm font-medium text-foreground">
-              ${formatNumber(pair.priceUsd, 6)}
+              ${formatNumber(price, 6)}
             </div>
-            {priceChange24h !== undefined && (
-              <div
-                className={`text-sm font-medium ${
-                  isPricePositive
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
-                }`}
-              >
-                {formatPercentage(priceChange24h)}
-              </div>
-            )}
           </div>
         </div>
       </CardHeader>
@@ -84,7 +72,7 @@ export default function PoolCard({ pair, onViewDetails }: PoolCardProps) {
               Liquidity
             </p>
             <p className="text-base font-semibold text-foreground">
-              ${formatNumber(pair.liquidity?.usd || 0)}
+              ${formatNumber(pair.tvl || 0)}
             </p>
           </div>
           <div className="space-y-1">
@@ -92,7 +80,7 @@ export default function PoolCard({ pair, onViewDetails }: PoolCardProps) {
               24h Volume
             </p>
             <p className="text-base font-semibold text-foreground">
-              ${formatNumber(pair.volume?.h24 || 0)}
+              ${formatNumber(pair.volume24h || 0)}
             </p>
           </div>
         </div>
@@ -100,18 +88,18 @@ export default function PoolCard({ pair, onViewDetails }: PoolCardProps) {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Market Cap
+              APR
             </p>
             <p className="text-base font-semibold text-foreground">
-              ${formatNumber(pair.marketCap || 0)}
+              {formatNumber(pair.apr || 0)}%
             </p>
           </div>
           <div className="space-y-1">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              24h Txns
+              24h Fees
             </p>
             <p className="text-base font-semibold text-foreground">
-              {(pair.txns?.h24?.buys || 0) + (pair.txns?.h24?.sells || 0)}
+              ${formatNumber(pair.fee24h || 0)}
             </p>
           </div>
         </div>
@@ -120,16 +108,10 @@ export default function PoolCard({ pair, onViewDetails }: PoolCardProps) {
           <div className="flex items-center justify-between gap-3">
             <div className="flex-1">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
-                6h Change
+                Fee/TVL Ratio
               </p>
-              <p
-                className={`text-sm font-medium ${
-                  pair.priceChange?.h6 && pair.priceChange.h6 >= 0
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-red-600 dark:text-red-400"
-                }`}
-              >
-                {formatPercentage(pair.priceChange?.h6)}
+              <p className="text-sm font-medium">
+                {formatNumber(pair.fee_tvl_ratio || 0)}
               </p>
             </div>
             {onViewDetails && (
@@ -142,6 +124,9 @@ export default function PoolCard({ pair, onViewDetails }: PoolCardProps) {
                 View Details
               </Button>
             )}
+            <div className="absolute bottom-3 right-3">
+              <DAMMV2PoolExternalList poolAddress={pair.pool_address} />
+            </div>
           </div>
         </div>
       </CardContent>

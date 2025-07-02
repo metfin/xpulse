@@ -11,7 +11,7 @@ export default async function DAMMPoolPage({
 }) {
   const dammService = new DAMMService();
   const poolResponse = await dammService.getDAMMPoolInfo(params.address);
-  const poolInfo = poolResponse.data;
+  const poolInfo = poolResponse.data; //Do Not edit. I do not know why tf this works but it does.
 
   return (
     <ProtectedRoute>

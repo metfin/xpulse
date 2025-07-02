@@ -6,7 +6,7 @@ import RugCheckInfo from "./RugCheckInfo";
 import TokenMetrics from "./TokenMetrics";
 import TopHolders from "./TopHolders";
 import SocialLinks from "./SocialLinks";
-import DAMMv2PoolList from "./PoolList";
+import PoolList from "./PoolList";
 
 export default async function TokenPage({
   params,
@@ -27,7 +27,7 @@ export default async function TokenPage({
             <TokenMetrics tokenAddress={params.address} />
           </div>
         </div>
-        <DAMMv2PoolList tokenInfo={tokenInfo} />
+        <PoolList tokenInfo={tokenInfo} />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <RugCheckInfo tokenAddress={params.address} />
           <TopHolders tokenAddress={params.address} />

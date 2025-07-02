@@ -15,7 +15,7 @@ export default function PublicKeySpan({
   return (
     <span
       className={cn(
-        "text-xs text-muted-foreground px-2 py-1 rounded-md bg-muted cursor-pointer mx-1",
+        "text-xs text-muted-foreground px-2 py-1 rounded-md bg-muted cursor-pointer mx-1 w-fit font-mono transition-all min-w-0",
         className
       )}
       onClick={() => {

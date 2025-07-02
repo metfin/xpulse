@@ -1,25 +1,23 @@
 import { TrendingUp, DollarSign, Activity, Percent } from "lucide-react";
-import { DAMMPoolInfo } from "@/lib/meteora-api";
+import { DAMMPoolInfo } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PublicKeySpan from "@/components/PublicKeySpan";
-import React from "react";
 
 export default function PoolMetrics({ poolInfo }: { poolInfo: DAMMPoolInfo }) {
+
   const formatNumber = (num: number) => {
     if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`;
-    if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`;
+    if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`; 
     if (num >= 1e3) return `$${(num / 1e3).toFixed(2)}K`;
     return `$${num.toFixed(2)}`;
   };
-
-  const formatPercentage = (num: number) => {
-    return `${(num * 100).toFixed(2)}%`;
-  };
-
-  const formatPrice = (price: number) => {
+  
+  const formatPrice = (price?: number) => {
+    if (typeof price !== "number" || isNaN(price)) return "$0.000000";
     return `$${price.toFixed(6)}`;
   };
+  
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleDateString();
@@ -44,7 +42,8 @@ export default function PoolMetrics({ poolInfo }: { poolInfo: DAMMPoolInfo }) {
             </div>
             <div>
               <span className="text-sm text-muted-foreground">APR</span>
-              <p className="text-lg font-semibold text-green-600">{formatPercentage(poolInfo.apr)}</p>
+              <p className="text-lg font-semibold text-green-600">{(poolInfo.apr.toFixed(3))}%</p>
+              
             </div>
             <div>
               <span className="text-sm text-muted-foreground">24h Fees</span>
@@ -85,11 +84,11 @@ export default function PoolMetrics({ poolInfo }: { poolInfo: DAMMPoolInfo }) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <span className="text-sm text-muted-foreground">Base Fee</span>
-              <p className="font-semibold">{formatPercentage(poolInfo.base_fee)}</p>
+              <p className="font-semibold">{(poolInfo.base_fee).toFixed(3)}</p>
             </div>
             <div>
               <span className="text-sm text-muted-foreground">Dynamic Fee</span>
-              <p className="font-semibold">{formatPercentage(poolInfo.dynamic_fee)}</p>
+              <p className="font-semibold">{(poolInfo.dynamic_fee).toFixed(3)}</p>
             </div>
           </div>
           
@@ -111,7 +110,7 @@ export default function PoolMetrics({ poolInfo }: { poolInfo: DAMMPoolInfo }) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <span className="text-sm text-muted-foreground">Pool Type</span>
-              <p className="font-semibold">{poolInfo.pool_type === 0 ? "Linear" : "Exponential"}</p>
+              <p className="font-semibold">{poolInfo.fee_scheduler_mode === 0 ? "Linear" : "Exponential"}</p>
             </div>
             <div>
               <span className="text-sm text-muted-foreground">Collect Fee Mode</span>

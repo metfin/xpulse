@@ -1,7 +1,9 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PoolPair } from "@/lib/meteora-api";
+import { DLMMPoolPair } from "@/lib/types";
+import { DLMMPoolExternalList } from "@/components/PoolExternalList";
+import Link from "next/link";
 
 // TokenInfo type for base/quote token metadata
 interface TokenInfo {
@@ -10,7 +12,7 @@ interface TokenInfo {
 }
 
 interface DLMMPoolCardProps {
-  pair: PoolPair;
+  pair: DLMMPoolPair;
   baseToken: TokenInfo;
   quoteToken: TokenInfo;
   onViewDetails?: () => void;
@@ -52,7 +54,13 @@ export default function DLMMPoolCard({ pair, baseToken, quoteToken, onViewDetail
             </div>
             <div>
               <h3 className="font-semibold text-lg text-foreground leading-none">
+                <Link
+                href={`/pool/dlmm/${pair.address}`}
+                target="_"
+                className="hover:underline underline-offset-4 transition-colors"
+              >
                 {baseToken.symbol} / {quoteToken.symbol}
+                </Link>
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
                 DLMM
@@ -126,6 +134,9 @@ export default function DLMMPoolCard({ pair, baseToken, quoteToken, onViewDetail
                 View Details
               </Button>
             )}
+            <div className="absolute bottom-3 right-3">
+              <DLMMPoolExternalList poolAddress={pair.address} />
+            </div>
           </div>
         </div>
       </CardContent>

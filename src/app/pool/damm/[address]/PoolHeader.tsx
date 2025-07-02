@@ -1,13 +1,13 @@
 "use client";
 
-import { DAMMPoolInfo } from "@/lib/meteora-api";
+import { DAMMPoolInfo } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PublicKeySpan from "@/components/PublicKeySpan";
 import React from "react";
 import { JupService} from "@/lib/jup";
 import { useQuery } from "@tanstack/react-query";
 import { BarChart3 } from "lucide-react";
-
+import { DAMMV2PoolExternalList } from "@/components/PoolExternalList";
 
 export default function PoolHeader({ poolInfo }: { poolInfo: DAMMPoolInfo }) {
   const formatNumber = (num: number) => {
@@ -23,8 +23,10 @@ export default function PoolHeader({ poolInfo }: { poolInfo: DAMMPoolInfo }) {
         JupService.getTokenInfo(poolInfo.token_a_mint),
         JupService.getTokenInfo(poolInfo.token_b_mint)
       ]);
+      
       return { a, b };
-    }
+    },
+    refetchInterval: 15000, // 30 seconds
 })
 
 if(isLoading){
@@ -88,10 +90,14 @@ if(isLoading){
             
             {/* Pool Name and Address */}
             <div className="flex flex-col">
-              <h1 className="text-2xl font-bold">{poolInfo.pool_name}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold">{poolInfo.pool_name}</h1>
+                {/* Meteora button to the right of the pool name */}
+                <DAMMV2PoolExternalList poolAddress={poolInfo.pool_address} />
+              </div>
               <PublicKeySpan
                 publicKey={poolInfo.pool_address}
-                className="m-0"
+                className="m-0 text-[10px] px-1 py-0.5 rounded bg-muted"
               />
             </div>
           </div>
